@@ -9,8 +9,6 @@ from customer_functions import *
 connection = sqlite3.connect('mechanic_shop.db')
 cursor = connection.cursor()
 
-
-
 def center_window(window, width, height):
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
