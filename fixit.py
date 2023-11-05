@@ -102,7 +102,6 @@ def load_edit_customer():
             customer_listbox),
         relief=tk.FLAT,
         borderwidth=0
-
     )
 
     edit_button = tk.Button(
