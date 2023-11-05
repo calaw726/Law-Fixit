@@ -207,8 +207,6 @@ def load_edit_customer():
     appointments_button.pack(side = "left", padx=10)
     invoices_button.pack(side = "left", padx=10)
 
-    
-
     # Refresh the customer list
     refresh_customer_list(customer_listbox)
 
