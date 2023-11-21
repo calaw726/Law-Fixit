@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import ImageTk, Image
 from customer_functions import *
+from vehicle_functions import *
 
 
 # Initialize the SQLite database
@@ -210,10 +211,188 @@ def load_edit_customer():
     # Refresh the customer list
     refresh_customer_list(customer_listbox)
 
+def load_edit_vehicle():
+    edit_vehicle = tk.Frame(root, width=window_width, height=window_height, bg=bg_color)
+    edit_vehicle.grid(row=0, column=0, sticky="nesw")
+    edit_vehicle.pack_propagate(False)
+
+    # Create input fields and buttons for managing vehicles
+    vin_label = tk.Label(
+        edit_vehicle,
+        text="VIN",
+        bg = bg_color,
+        fg="white",
+        font=("Calibri", 12)
+    )
+    vin_entry = tk.Entry(edit_vehicle)
+
+    customer_id_label = tk.Label(
+        edit_vehicle,
+        text="Customer ID",
+        bg = bg_color,
+        fg="white",
+        font=("Calibri", 12)
+    )
+    customer_id_entry = tk.Entry(edit_vehicle)
+
+    make_label = tk.Label(
+        edit_vehicle,
+        text="Make",
+        bg=bg_color,
+        fg="white",
+        font=("Calibri", 12)
+    )
+    make_entry = tk.Entry(edit_vehicle)
+
+    model_label = tk.Label(
+        edit_vehicle,
+        text="Model",
+        bg=bg_color,
+        fg="white",
+        font=("Calibri", 12)
+    )
+    model_entry = tk.Entry(edit_vehicle)
+
+    year_label = tk.Label(
+        edit_vehicle,
+        text="Year",
+        bg=bg_color,
+        fg="white",
+        font=("Calibri", 12)
+    )
+    year_entry = tk.Entry(edit_vehicle)
+
+    add_button = tk.Button(
+        edit_vehicle,
+        text = "Add Vehicle",
+        font = ("Calibri", 18),
+        fg = "black",
+        cursor = "hand2",
+        activebackground = button_pressed_color,
+        activeforeground="white",
+        command=lambda: add_vehicle(
+            vin_entry,
+            customer_id_entry,
+            make_entry,
+            model_entry,
+            year_entry,
+            vehicle_listbox),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    edit_button = tk.Button(
+        edit_vehicle,
+        text="Edit Vehicle",
+        font=("Calibri", 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        activeforeground="white",
+        command=lambda: modify_vehicle(vehicle_listbox),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    button_row = tk.Frame(edit_vehicle, bg=bg_color)
+    button_row.grid(row=1, column=0, sticky="nesw")
+    button_row.pack(side=tk.BOTTOM)
+
+    back_button = tk.Button(
+        button_row,
+        text="Back",
+        font=("Calibri", 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        activeforeground="white",
+        command=lambda: load_main_frame(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    customers_button = tk.Button(
+        button_row,
+        text="Customers",
+        font=("Calibri", 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        activeforeground="white",
+        command=lambda: load_edit_customer(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    services_button = tk.Button(
+        button_row,
+        text="Services",
+        font=("Calibri", 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        activeforeground="white",
+        command=lambda: load_edit_service(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    appointments_button = tk.Button(
+        button_row,
+        text="Appointments",
+        font=("Calibri", 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        activeforeground="white",
+        command=lambda: load_edit_appointment(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    invoices_button = tk.Button(
+        button_row,
+        text="Invoices",
+        font=("Calibri", 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        activeforeground="white",
+        command=lambda: load_edit_invoice(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    # Create a listbox to display vehicles
+    vehicle_listbox = tk.Listbox(edit_vehicle)
+    vehicle_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
+
+    # Pack the input fields and buttons
+    vin_label.pack()
+    vin_entry.pack()
+    customer_id_label.pack()
+    customer_id_entry.pack()
+    make_label.pack()
+    make_entry.pack()
+    model_label.pack()
+    model_entry.pack()
+    year_label.pack()
+    year_entry.pack()
+    add_button.pack()
+    edit_button.pack(padx=(10, 10))
+    back_button.pack(side = "left", padx=10)
+    customers_button.pack(side = "left", padx=10)
+    services_button.pack(side = "left", padx=10)
+    appointments_button.pack(side = "left", padx=10)
+    invoices_button.pack(side = "left", padx=10)
+
+    # Refresh the vehicle list
+    refresh_vehicle_list(vehicle_listbox)
+
 
 def get_logo():
     # Create the logo
-    original_logo = Image.open(r'src/assets/logo.jpg')
+    original_logo = Image.open(r'assets/logo.jpg')
     width, height = original_logo.size
     new_width = width // 2
     new_height = height // 2
