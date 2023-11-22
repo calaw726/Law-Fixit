@@ -7,7 +7,7 @@ connection = sqlite3.connect("mechanic_shop.db")
 cursor = connection.cursor()
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS Vehicles (
-        vin INTEGER PRIMARY KEY,
+        vin TEXT PRIMARY KEY,
         customer_id INTEGER,
         make TEXT,
         model TEXT,
@@ -42,7 +42,7 @@ def valid_year(year):
     return True
 
 def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entry, vehicle_listbox):
-    vin = vin_entry.get()
+    vin = vin_entry.get().upper()
     customer_id = customer_id_entry.get()
     make = make_entry.get()
     model = model_entry.get()
