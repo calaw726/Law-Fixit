@@ -44,8 +44,7 @@ def add_customer(first_name_entry, last_name_entry, phone_number_entry, email_en
     phone_number = phone_number_entry.get()
     email = email_entry.get()
 
-
-    
+    # Check if the required fields are empty and if the phone number and email are valid
     if not first_name or not last_name:
         # Required fields are empty
         messagebox.showerror("Error", "First Name and Last Name are required fields.")
@@ -63,10 +62,13 @@ def add_customer(first_name_entry, last_name_entry, phone_number_entry, email_en
         ''', (first_name, last_name, phone_number, email))
         connection.commit()
         refresh_customer_list(listbox)
+
+        # Clear the entry widgets
         first_name_entry.delete(0, tk.END)
         last_name_entry.delete(0, tk.END)
         phone_number_entry.delete(0, tk.END)
         email_entry.delete(0, tk.END)
+
         messagebox.showinfo("Success", "Customer added successfully.")
 
 # Function to edit a customer
