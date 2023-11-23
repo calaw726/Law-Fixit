@@ -32,4 +32,4 @@ This is my final project for CS 348, a database management app that manages a da
 
 ## System Requirements
 Python installation with Tkinter installed.
-Currrently tested on Anaconda Python 3.15 and Tkinter 8.6
+Currrently tested on Anaconda Python 3.11.5 and Tkinter 8.6
