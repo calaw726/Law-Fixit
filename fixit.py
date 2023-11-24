@@ -36,7 +36,7 @@ def load_main_frame():
     edit_tables_button = tk.Button(
         welcome_frame,
         text="Edit Tables",
-        font=("Calibri", 48),
+        font=(font_family, 48),
         fg="Black",
         cursor="hand2",
         activebackground=button_pressed_color,
@@ -46,47 +46,37 @@ def load_main_frame():
         borderwidth=0
     ).pack()
 
+    center_window(root, window_width, window_height)
+
 def load_edit_customer():
     edit_customer = tk.Frame(root, width=window_width, height=window_height, bg=bg_color)
     edit_customer.grid(row=0, column=0, sticky="nesw")
     edit_customer.pack_propagate(False)
 
-    # Create input fields and buttons for managing customers
-    first_name_label = tk.Label(
-        edit_customer,
-        text="First Name",
-        bg = bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    first_name_entry = tk.Entry(edit_customer)
+    # Create a listbox to display customers
+    customer_listbox = tk.Listbox(edit_customer)
+    customer_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
 
-    last_name_label = tk.Label(
-        edit_customer,
-        text="Last Name",
-        bg = bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    last_name_entry = tk.Entry(edit_customer)
+    # Labels and Entries
+    labels_and_entries = [
+        ("First Name:", tk.Entry(edit_customer)),
+        ("Last Name:", tk.Entry(edit_customer)),
+        ("Phone Number:", tk.Entry(edit_customer)),
+        ("Email:", tk.Entry(edit_customer))
+    ]
 
-    phone_number_label = tk.Label(
-        edit_customer,
-        text="Phone Number",
-        bg=bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    phone_number_entry = tk.Entry(edit_customer)
+    # Create input fields for managing customers
+    for label, entry in labels_and_entries:
+        tk.Label(
+            edit_customer,
+            text=label,
+            bg=bg_color,
+            fg="white",
+            font=(font_family, 12)
+        ).pack()
+        entry.pack()
 
-    email_label = tk.Label(
-        edit_customer,
-        text="Email",
-        bg=bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    email_entry = tk.Entry(edit_customer)
+    # Buttons
 
     add_button = tk.Button(
         edit_customer, 
@@ -188,19 +178,7 @@ def load_edit_customer():
         borderwidth=0
     )
 
-    # Create a listbox to display customers
-    customer_listbox = tk.Listbox(edit_customer)
-    customer_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
 
-    # Pack the input fields and buttons
-    first_name_label.pack()
-    first_name_entry.pack()
-    last_name_label.pack()
-    last_name_entry.pack()
-    phone_number_label.pack()
-    phone_number_entry.pack()
-    email_label.pack()
-    email_entry.pack()
     add_button.pack()
     edit_button.pack(padx=(10, 10))
     back_button.pack(side = "left", padx=10)
@@ -217,51 +195,32 @@ def load_edit_vehicle():
     edit_vehicle.grid(row=0, column=0, sticky="nesw")
     edit_vehicle.pack_propagate(False)
 
+    # Create a listbox to display vehicles
+    vehicle_listbox = tk.Listbox(edit_vehicle)
+    vehicle_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
+
     # Create input fields and buttons for managing vehicles
-    vin_label = tk.Label(
-        edit_vehicle,
-        text="VIN",
-        bg = bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    vin_entry = tk.Entry(edit_vehicle)
+    enties_and_labels = [
+        ("VIN:", tk.Entry(edit_vehicle)),
+        ("Customer ID:", tk.Entry(edit_vehicle)),
+        ("Make:", tk.Entry(edit_vehicle)),
+        ("Model:", tk.Entry(edit_vehicle)),
+        ("Year:", tk.Entry(edit_vehicle))
+    ]
 
-    customer_id_label = tk.Label(
-        edit_vehicle,
-        text="Customer ID",
-        bg = bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    customer_id_entry = tk.Entry(edit_vehicle)
+    entry_values = []
 
-    make_label = tk.Label(
-        edit_vehicle,
-        text="Make",
-        bg=bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    make_entry = tk.Entry(edit_vehicle)
-
-    model_label = tk.Label(
-        edit_vehicle,
-        text="Model",
-        bg=bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    model_entry = tk.Entry(edit_vehicle)
-
-    year_label = tk.Label(
-        edit_vehicle,
-        text="Year",
-        bg=bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    year_entry = tk.Entry(edit_vehicle)
+    # Create input fields for managing vehicles
+    for label, entry in enties_and_labels:
+        tk.Label(
+            edit_vehicle,
+            text=label,
+            bg=bg_color,
+            fg="white",
+            font=(font_family, 12)
+        ).pack()
+        entry.pack()
+        entry_values.append(entry)
 
     add_button = tk.Button(
         edit_vehicle,
@@ -272,11 +231,11 @@ def load_edit_vehicle():
         activebackground = button_pressed_color,
         activeforeground="white",
         command=lambda: add_vehicle(
-            vin_entry,
-            customer_id_entry,
-            make_entry,
-            model_entry,
-            year_entry,
+            entry_values[0],
+            entry_values[1],
+            entry_values[2],
+            entry_values[3],
+            entry_values[4],
             vehicle_listbox),
         relief=tk.FLAT,
         borderwidth=0
@@ -364,21 +323,7 @@ def load_edit_vehicle():
         borderwidth=0
     )
 
-    # Create a listbox to display vehicles
-    vehicle_listbox = tk.Listbox(edit_vehicle)
-    vehicle_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
-
     # Pack the input fields and buttons
-    vin_label.pack()
-    vin_entry.pack()
-    customer_id_label.pack()
-    customer_id_entry.pack()
-    make_label.pack()
-    make_entry.pack()
-    model_label.pack()
-    model_entry.pack()
-    year_label.pack()
-    year_entry.pack()
     add_button.pack()
     edit_button.pack(padx=(10, 10))
     back_button.pack(side = "left", padx=10)
@@ -391,39 +336,33 @@ def load_edit_vehicle():
     refresh_vehicle_list(vehicle_listbox)
 
 def load_edit_service():
-    
-
     edit_service = tk.Frame(root, width=window_width, height=window_height, bg=bg_color)
     edit_service.grid(row=0, column=0, sticky="nesw")
     edit_service.pack_propagate(False)
 
+    # Create a listbox to display services
+    service_listbox = tk.Listbox(edit_service)
+    service_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
+
     # Create input fields and buttons for managing services
-    service_name_label = tk.Label(
-        edit_service,
-        text="Service Name",
-        bg = bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    service_name_entry = tk.Entry(edit_service)
+    enties_and_labels = [
+        ("Service Name:", tk.Entry(edit_service)),
+        ("Description:", tk.Entry(edit_service)),
+        ("Price:", tk.Entry(edit_service))
+    ]
 
-    description_label = tk.Label(
-        edit_service,
-        text="Description",
-        bg = bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    description_entry = tk.Entry(edit_service)
+    entry_values = []
 
-    price_label = tk.Label(
-        edit_service,
-        text="Price",
-        bg=bg_color,
-        fg="white",
-        font=("Calibri", 12)
-    )
-    price_entry = tk.Entry(edit_service)
+    for label, entry in enties_and_labels:
+        tk.Label(
+            edit_service,
+            text=label,
+            bg=bg_color,
+            fg="white",
+            font=(font_family, 12)
+        ).pack()
+        entry.pack()
+        entry_values.append(entry)
 
     add_button = tk.Button(
         edit_service,
@@ -435,9 +374,9 @@ def load_edit_service():
         activeforeground="white",
         command=lambda: add_service(
             service_listbox,
-            service_name_entry,
-            description_entry,
-            price_entry),
+            entry_values[0],
+            entry_values[1],
+            entry_values[2]),
         relief=tk.FLAT,
         borderwidth=0
     )
@@ -549,17 +488,7 @@ def load_edit_service():
         borderwidth=0
     )
 
-    # Create a listbox to display services
-    service_listbox = tk.Listbox(edit_service)
-    service_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
-
     # Pack the input fields and buttons
-    service_name_label.pack()
-    service_name_entry.pack()
-    description_label.pack()
-    description_entry.pack()
-    price_label.pack()
-    price_entry.pack()
     add_button.pack()
     get_description_button.pack()
     edit_button.pack(padx=(10, 10))
@@ -572,19 +501,24 @@ def load_edit_service():
 
     refresh_service_list(service_listbox)
 
-def get_logo():
-    # Create the logo
-    original_logo = Image.open(r'assets/logo.jpg')
-    width, height = original_logo.size
-    new_width = width // 2
-    new_height = height // 2
+def get_logo(path=r'assets/logo.jpg', resize_factor=0.5):
+    try:
+        # Create the logo
+        original_logo = Image.open(r'assets/logo.jpg')
+        width, height = original_logo.size
+        new_width = int(width * resize_factor)
+        new_height = int(height * resize_factor)
 
-    # Resize the logo
-    resized_logo = original_logo.resize((new_width, new_height), Image.LANCZOS)
-    return resized_logo
+        # Resize the logo
+        resized_logo = original_logo.resize((new_width, new_height), Image.LANCZOS)
+        return resized_logo
+    except FileNotFoundError:
+        print(f"Error: logo.jpg not found at: {path}")
+        return None
 
 # Create the main window
 bg_color = "#08142E"
+fg_color = "#FFFFFF"
 button_color = "#1b4298"
 button_pressed_color = "#becff4"
 
@@ -593,9 +527,20 @@ window_height = 600
 
 root = tk.Tk()
 root.title("Law-Fixit DBMS")
+root.geometry(f'{window_width}x{window_height}')
 center_window(root, window_width, window_height)
 root.eval("tk::PlaceWindow . center")
 
+
+
+# Check if the system is macOS
+is_macos = root.tk.call('tk', 'windowingsystem') == 'aqua'
+# Set the font based on the operating system
+if is_macos:
+    print("macOS detected")
+    font_family = "San Francisco"  # Use Helvetica as a fallback on macOS
+else:
+    font_family = "Arial"  # Use Arial on other systems
 
 load_main_frame()
 
