@@ -534,13 +534,10 @@ root.geometry(f'{window_width}x{window_height}')
 center_window(root, window_width, window_height)
 root.eval("tk::PlaceWindow . center")
 
-
-
 # Check if the system is macOS
 is_macos = root.tk.call('tk', 'windowingsystem') == 'aqua'
 # Set the font based on the operating system
 if is_macos:
-    print("macOS detected")
     font_family = "San Francisco"  # Use Helvetica as a fallback on macOS
 else:
     font_family = "Arial"  # Use Arial on other systems

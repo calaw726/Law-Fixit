@@ -17,7 +17,7 @@ cursor.execute('''
 ''')
 connection.commit()
 
-def find_customer(customer_id):
+def customer_exists(customer_id):
     cursor.execute('''
         SELECT * FROM Customers WHERE customer_id = ?
     ''', (customer_id,))
@@ -47,11 +47,12 @@ def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entr
     make = make_entry.get()
     model = model_entry.get()
     year = year_entry.get()
-    if not vin or not customer_id or not make or not model or not year:
+
+    if not all((vin, customer_id, make, model, year)):
         # Required fields are empty
         messagebox.showerror("Error", "All fields are required.")
         return
-    if not find_customer(customer_id):
+    if not customer_exists(customer_id):
         # Customer ID does not exist
         messagebox.showerror("Error", "Customer ID does not exist.")
         return
@@ -70,11 +71,9 @@ def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entr
         ''', (vin, customer_id, make, model, year))
         connection.commit()
         refresh_vehicle_list(vehicle_listbox)
-        vin_entry.delete(0, tk.END)
-        customer_id_entry.delete(0, tk.END)
-        make_entry.delete(0, tk.END)
-        model_entry.delete(0, tk.END)
-        year_entry.delete(0, tk.END)
+
+        for entry in (vin_entry, customer_id_entry, make_entry, model_entry, year_entry):
+            entry.delete(0, tk.END)
         messagebox.showinfo("Success", "Vehicle added successfully.")
     except sqlite3.Error as error:
         messagebox.showerror("Error", f"Error adding vehicle: {error}")
@@ -96,8 +95,8 @@ def modify_vehicle(vehicle_listbox):
         return
 
     if not valid_vin(vin):
-        # VIN is not valid
         messagebox.showerror("Error", "VIN is not valid. Must be of length 17.")
+        return
     
     # Create an edit dialog window
     edit_window = tk.Toplevel()
@@ -115,7 +114,7 @@ def modify_vehicle(vehicle_listbox):
     def save_changes():
         new_customer_id = new_customer_id_entry.get()
 
-        if not find_customer(new_customer_id):
+        if not customer_exists(new_customer_id):
             messagebox.showerror("Error", "Customer ID does not exist.")
             return
         try:
@@ -129,11 +128,12 @@ def modify_vehicle(vehicle_listbox):
             messagebox.showinfo("Success", "Vehicle updated successfully.")
         except sqlite3.Error as error:
             messagebox.showerror("Error", f"Error updating vehicle: {error}")
+        refresh_vehicle_list(vehicle_listbox)
         edit_window.destroy()
     
     # Button to save changes
     save_button = tk.Button(edit_window, text="Save", command=save_changes).pack()
-    refresh_vehicle_list(vehicle_listbox)
+    
 
 def refresh_vehicle_list(listbox):
     cursor.execute('''
@@ -142,4 +142,5 @@ def refresh_vehicle_list(listbox):
     vehicles = cursor.fetchall()
     listbox.delete(0, tk.END)
     for vehicle in vehicles:
-        listbox.insert(tk.END, f"VIN: {vehicle[0]}, Customer ID: {vehicle[1]}, Make: {vehicle[2]}, Model: {vehicle[3]}, Year: {vehicle[4]}")
+        vehicle_info = f"VIN: {vehicle[0]}, Customer ID: {vehicle[1]}, Make: {vehicle[2]}, Model: {vehicle[3]}, Year: {vehicle[4]}"
+        listbox.insert(tk.END, vehicle_info)
