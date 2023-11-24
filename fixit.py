@@ -1,15 +1,41 @@
 import sqlite3
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, Spinbox, ttk
+from tkcalendar import Calendar
 from PIL import ImageTk, Image
 from customer_functions import *
 from vehicle_functions import *
 from service_functions import *
-
+from appointment_functions import *
+from time_utils import *
 
 # Initialize the SQLite database
 connection = sqlite3.connect('mechanic_shop.db')
 cursor = connection.cursor()
+
+def get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_menu):
+    customer_id = customer_id_entry.get()
+    cursor.execute('''
+        SELECT VIN FROM Vehicles WHERE customer_id = ?
+    ''', (customer_id,))
+    vehicles = cursor.fetchall()
+    vehicle_var.set("")
+    vehicle_menu['menu'].delete(0, 'end')  # Clear the menu
+    if not vehicles:
+        messagebox.showerror("Error", "No vehicles found for this customer.")
+    for vehicle in vehicles:
+        vehicle_menu['menu'].add_command(label=vehicle[0], command=tk._setit(vehicle_var, vehicle))
+        print (f"found vehicle: {vehicle[0]}")
+
+def get_services():
+    cursor.execute('''
+        SELECT service_id, service_name FROM Services
+    ''')
+    services = cursor.fetchall()
+    return services
+
+
+
 
 def center_window(window, width, height):
     screen_width = window.winfo_screenwidth()
@@ -84,7 +110,7 @@ def load_edit_customer():
     add_button = tk.Button(
         edit_customer, 
         text="Add Customer",
-        font=("Calibri", 18),
+        font=(font_family, 18),
         fg="black",
         cursor="hand2",
         activebackground=button_pressed_color,
@@ -503,6 +529,240 @@ def load_edit_service():
     invoices_button.pack(side = "left", padx=10)
 
     refresh_service_list(service_listbox)
+
+def load_edit_appointment():
+
+    # Create the main frame
+    edit_appointment = tk.Frame(root, width=window_width, height=window_height, bg=bg_color)
+    edit_appointment.grid(row=0, column=0, columnspan=2, rowspan = 4, sticky="nesw")
+    edit_appointment.pack_propagate(False)
+
+    # Create a listbox to display appointments
+    appointment_listbox = tk.Listbox(edit_appointment)
+    appointment_listbox.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+    # Create the left and right frames
+    left_frame = tk.Frame(edit_appointment, bg = bg_color)
+    left_frame.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+    left_frame.place(relx=1/5, rely=0.5, anchor="center")
+
+    right_frame = tk.Frame(edit_appointment, bg=bg_color)
+    right_frame.grid(row=1, column=1, padx=10, pady=10, sticky="e")
+    right_frame.place(relx=2/3, rely=0.5, anchor="center")
+
+    # Create the time frame with the right frame
+    time_frame = tk.Frame(right_frame, bg=bg_color)
+    time_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    time_frame.place(relx=3/4, rely=1/3, anchor="center")
+    date_entry = tk.Entry(right_frame)
+    date_entry.grid(row = 0, column = 0, padx = 10, sticky="ew")
+
+    time_label = tk.Label(right_frame, text="Appointment Time: \n Reminder that we accept appointments \n between 8:00 and 17:00", bg=bg_color, fg="white", font=(font_family, 12))
+    time_label.grid(row = 0, column = 1, padx = 5, sticky="w")
+
+    hour_spinbox = Spinbox(time_frame, from_=8, to = 17, width = 2)
+    hour_spinbox.grid(row = 0, column = 1, pady=5)
+    colon_label = tk.Label(time_frame, text=":", bg=bg_color, fg="white", font=(font_family, 12))
+    colon_label.grid(row = 0, column = 2, pady=5)
+    minute_spinbox = Spinbox(time_frame, from_=0, to = 59, width = 2)
+    minute_spinbox.grid(row = 0, column = 3, pady=5)
+
+    calendar = Calendar(right_frame, selectmode="day")
+    calendar.grid(row = 1, column = 0, padx = 10, sticky="nsw")
+
+    select_date_button = tk.Button(right_frame, text="Select Date",font = (font_family, 12), bg=bg_color, command = lambda: get_selected_date(calendar, date_entry, hour_spinbox, minute_spinbox, True))
+    select_date_button.grid(row = 2, column = 0, padx = 10, sticky="ew")
+
+    customer_id_label = tk.Label(
+        left_frame,
+        text="Customer ID:",
+        bg=bg_color,
+        fg="white",
+        font=(font_family, 12)
+    )
+    customer_id_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
+    customer_id_entry = tk.Entry(left_frame)
+    customer_id_entry.grid(row=1, column=0, sticky="w", padx=(0, 10))
+    service_label = tk.Label(
+        left_frame,
+        text="Service Name:",
+        bg=bg_color,
+        fg="white",
+        font=(font_family, 12)
+    )
+    service_label.grid(row=2, column=0, sticky="w", padx=(0, 10))
+
+    services = get_services()
+    selected_service = tk.StringVar()
+
+    # Use the display names for the combobox values
+    service_combobox = ttk.Combobox(left_frame, textvariable=selected_service, values=services, state="readonly")
+    service_combobox.grid(row=3, column=0, sticky="w", padx=(0, 10))
+
+
+    vehicle_label = tk.Label(left_frame, text="Vehicle ID:", bg=bg_color, fg="white", font=(font_family, 12))
+    vehicle_label.grid(row=4, column=0, sticky="w", padx=(0, 10))
+    vehicle_var = tk.StringVar()
+
+    vehicle_menu = tk.OptionMenu(left_frame, vehicle_var, "")
+    vehicle_menu.grid(row=5, column=0, sticky="w", padx=(0, 10))
+
+    update_vehicle_button = tk.Button(
+        left_frame,
+        text="Update Vehicle List",
+        font = (font_family, 12),
+        bg=bg_color,
+        command = lambda: get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_menu),
+        cursor = "hand2",
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+    update_vehicle_button.grid(row=6, column=0, sticky="w", pady = 5)
+    
+    # Drop-down menu for status
+    selected_status = tk.StringVar()
+    status_options = [
+        "Pending",
+        "In Progress",
+        "Completed"
+    ]
+    status_label = tk.Label(left_frame, text="Status:", bg=bg_color, fg="white", font=(font_family, 12))
+    status_label.grid(row=7, column=0, sticky="w", pady=5)
+    status_dropdown = ttk.Combobox(left_frame, textvariable=selected_status, values=status_options, state="readonly")
+    selected_status.set(status_options[0])
+    status_dropdown.grid(row=8, column=0, pady=5, sticky="w")
+
+    button_column = tk.Frame(edit_appointment, bg=bg_color)
+    button_column.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="ew")
+    button_column.place(relx = 0.5, rely = 0.8, anchor="center")
+
+    add_button = tk.Button(
+        button_column,
+        text="Add Appointment",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: add_appointment(
+            appointment_listbox,
+            customer_id_entry,
+            vehicle_var,
+            selected_service,
+            date_entry,
+            selected_status,
+            ),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    edit_button = tk.Button(
+        button_column,
+        text="Edit Appointment",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: modify_appointment(appointment_listbox),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    delete_button = tk.Button(
+        button_column,
+        text="Delete Appointment",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: delete_appointment(appointment_listbox),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    button_row = tk.Frame(edit_appointment, bg=bg_color)
+    button_row.grid(row=3, column=0, columnspan=2, sticky="s")
+    button_row.pack(side=tk.BOTTOM)
+
+    back_button = tk.Button(
+        button_row,
+        text="Back",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_main_frame(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    customers_button = tk.Button(
+        button_row,
+        text="Customers",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_edit_customer(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+    
+    vehicles_button = tk.Button(
+        button_row,
+        text="Vehicles",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_edit_vehicle(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    services_button = tk.Button(
+        button_row,
+        text="Services",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_edit_service(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    invoices_button = tk.Button(
+        button_row,
+        text="Invoices",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_edit_invoice(),
+        relief=tk.FLAT,
+        borderwidth=0
+    )
+
+    add_button.grid(row = 0, column = 0, padx=(10, 0), sticky="ew")
+    edit_button.grid(row = 1, column = 0, padx=(10, 0), sticky="ew")
+    delete_button.grid(row = 2, column = 0, padx=(10, 0), sticky="ew")
+    back_button.pack(side = "left", padx=10)
+    customers_button.pack(side = "left", padx=10)
+    vehicles_button.pack(side = "left", padx=10)
+    services_button.pack(side = "left", padx=10)
+    invoices_button.pack(side = "left", padx=10)
+
+
+    edit_appointment.grid_columnconfigure(0, weight=1)
+    edit_appointment.grid_columnconfigure(1, weight=1)
+
+    button_column.grid_columnconfigure(1, weight=1)
+    button_column.grid_rowconfigure(0, weight=1)
+
+    # Refresh the appointment list
+    refresh_appointment_list(appointment_listbox)
+
+
 
 def get_logo(path=r'assets/logo.jpg', resize_factor=0.5):
     try:
