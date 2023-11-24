@@ -65,6 +65,8 @@ def load_edit_customer():
         ("Email:", tk.Entry(edit_customer))
     ]
 
+    entry_values = []
+
     # Create input fields for managing customers
     for label, entry in labels_and_entries:
         tk.Label(
@@ -75,6 +77,7 @@ def load_edit_customer():
             font=(font_family, 12)
         ).pack()
         entry.pack()
+        entry_values.append(entry)
 
     # Buttons
 
@@ -87,10 +90,10 @@ def load_edit_customer():
         activebackground=button_pressed_color,
         activeforeground="white",
         command=lambda: add_customer(
-            first_name_entry,
-            last_name_entry,
-            phone_number_entry,
-            email_entry,
+            entry_values[0],
+            entry_values[1],
+            entry_values[2],
+            entry_values[3],
             customer_listbox),
         relief=tk.FLAT,
         borderwidth=0
