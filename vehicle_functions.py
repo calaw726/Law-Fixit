@@ -3,19 +3,28 @@ import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
 
-connection = sqlite3.connect("mechanic_shop.db")
-cursor = connection.cursor()
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Vehicles (
-        vin TEXT PRIMARY KEY,
-        customer_id INTEGER,
-        make TEXT,
-        model TEXT,
-        year INTEGER,
-        FOREIGN KEY(customer_id) REFERENCES Customers(customer_id)
-    )
-''')
-connection.commit()
+try:
+    connection = sqlite3.connect("mechanic_shop.db")
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Vehicles (
+            vin TEXT PRIMARY KEY,
+            customer_id INTEGER,
+            make TEXT,
+            model TEXT,
+            year INTEGER,
+            FOREIGN KEY(customer_id) REFERENCES Customers(customer_id)
+        )
+    ''')
+    # Create an idex on the customer_id column
+    # This improves performance when the appointments window searches for vehicles by customer_id
+    cursor.execute('''
+        CREATE INDEX IF NOT EXISTS customer_id_index
+        ON Vehicles(customer_id)
+    ''')
+    connection.commit()
+except sqlite3.Error as error:
+    messagebox.showerror("Error", f"Error initialzing Vehicles table: {error}")
 
 def customer_exists(customer_id):
     cursor.execute('''
