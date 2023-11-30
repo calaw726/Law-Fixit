@@ -37,8 +37,9 @@ except sqlite3.Error as error:
     messagebox.showerror("Error", f"Error initializing Appointments table: {error}")
 
 def get_services():
+    # Stored Procedure that lists service_id and service_name
     cursor.execute('''
-        SELECT service_id, service_name FROM Services
+        SELECT * FROM service_view
     ''')
     services = cursor.fetchall()
     return services
