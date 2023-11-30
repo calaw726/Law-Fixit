@@ -66,6 +66,7 @@ def add_customer(first_name_entry, last_name_entry, phone_number_entry, email_en
 
         messagebox.showinfo("Success", "Customer added successfully.")
     except sqlite3.Error as error:
+        connection.rollback()
         messagebox.showerror("Error", f"Error adding customer: {error}")
 
 # Function to edit a customer
@@ -132,6 +133,7 @@ def modify_customer(customer_listbox):
             # Commit the changes to the database
             connection.commit()
         except sqlite3.Error as e:
+            connection.rollback()
             print("Error updating customer phone and email:", e)
 
         edit_window.destroy()

@@ -51,6 +51,7 @@ def add_invoice(appointment_id_entry, total_cost_entry, payment_status_entry, da
         payment_status_entry.delete(0, tk.END)
         date_paid_entry.delete(0, tk.END)
     except sqlite3.IntegrityError:
+        connection.rollback()
         messagebox.showerror("Error", "Appointment ID must be unique.")
         return
     
@@ -89,7 +90,6 @@ def modify_invoice(listbox):
         payment_status = status_var.get()
 
         try:
-            cursor.execute("BEGIN TRANSACTION")
             if payment_status == "Paid":
                 cursor.execute('''
                     UPDATE Invoices
@@ -102,17 +102,16 @@ def modify_invoice(listbox):
                     SET payment_status = ?, date_paid = NULL
                     WHERE invoice_id = ?
                 ''', (payment_status, invoice_id))
-            cursor.execute("COMMIT")
             connection.commit()
             refresh_invoice_list(listbox)
         except sqlite3.Error as error:
+            connection.rollback()
             messagebox.showerror("Error", f"Error updating invoice: {error}")
         edit_window.destroy()
     
     # Button to save changes
     save_button = tk.Button(edit_window, text="Save Changes", command=save_changes)
     save_button.pack()
-
 
 
 def refresh_invoice_list(listbox):

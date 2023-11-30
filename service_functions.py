@@ -126,6 +126,7 @@ def modify_service(service_listbox):
             ''', (new_service_name, new_description, new_price, service_id))
             connection.commit()
         except sqlite3.Error as error:
+            connection.rollback()
             messagebox.showerror("Error", f"Error updating service: {error}.")
         edit_window.destroy()
         refresh_service_list(service_listbox)
@@ -155,6 +156,7 @@ def delete_service(service_listbox):
         connection.commit()
         refresh_service_list(service_listbox)
     except (ValueError, IndexError, sqlite3.Error) as error:
+        connection.rollback()
         messagebox.showerror("Error", f"Error deleting service: {error}.")
     
     
