@@ -7,22 +7,34 @@ from tkcalendar import Calendar
 from time_utils import *
 
 # Create the Appointments table
-connection = sqlite3.connect('mechanic_shop.db')
-cursor = connection.cursor()
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Appointments (
-        appointment_id INTEGER PRIMARY KEY,
-        customer_id INTEGER,
-        vehicle_id TEXT,
-        service_id INTEGER,
-        appointment_date TEXT,
-        status TEXT,
-        FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
-        FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id),
-        FOREIGN KEY (service_id) REFERENCES Services(service_id)
-    )
-''')
-connection.commit()
+try:
+    connection = sqlite3.connect('mechanic_shop.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Appointments (
+            appointment_id INTEGER PRIMARY KEY,
+            customer_id INTEGER,
+            vehicle_id TEXT,
+            service_id INTEGER,
+            appointment_date TEXT,
+            status TEXT,
+            FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
+            FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id),
+            FOREIGN KEY (service_id) REFERENCES Services(service_id)
+        )
+    ''')
+
+    # Create a Stored Procedure to get the upcoming appointments
+    cursor.execute('''
+        CREATE VIEW IF NOT EXISTS upcoming_appointments AS
+        SELECT *
+        FROM Appointments
+        WHERE SUBSTR(appointment_date, 7, 4) || '-' || SUBSTR(appointment_date, 1, 2) || '-' || SUBSTR(appointment_date, 4, 2) >= DATE('now')
+        ORDER BY appointment_date;
+    ''')
+    connection.commit()
+except sqlite3.Error as error:
+    messagebox.showerror("Error", f"Error initializing Appointments table: {error}")
 
 def get_services():
     cursor.execute('''
@@ -90,9 +102,6 @@ def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_ent
         messagebox.showerror("Error", "Service ID does not exist.")
         return
     try:
-        # Begin the Transaction
-        cursor.execute("BEGIN TRANSACTION")
-
         # Get the price of the selected service
         service_cost = get_service_cost(service_id)
 
@@ -109,7 +118,6 @@ def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_ent
         ''', (cursor.lastrowid, service_cost, "Unpaid"))
 
         # Commit the Transaction
-        cursor.execute("COMMIT")
         connection.commit()
         refresh_appointment_list(listbox)
 
@@ -121,6 +129,7 @@ def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_ent
         status_entry.set("")
     except sqlite3.Error as error:
         messagebox.showerror("Error", f"Error adding appointment: {error}")
+        connection.rollback()
 
 def modify_appointment(listbox):
     selected_index = listbox.curselection()
@@ -236,7 +245,9 @@ def modify_appointment(listbox):
             refresh_appointment_list(listbox)
             messagebox.showinfo("Success", "Appointment updated successfully.")
         except sqlite3.Error as error:
+            connection.rollback()
             messagebox.showerror("Error", f"Error updating appointment: {error}")
+
         refresh_appointment_list(listbox)
         edit_window.destroy()
     
@@ -264,7 +275,6 @@ def delete_appointment(listbox):
         return
     
     try:
-        cursor.execute("BEGIN TRANSACTION")
         cursor.execute('''
             DELETE FROM Invoices
             WHERE appointment_id = ?
@@ -273,12 +283,22 @@ def delete_appointment(listbox):
             DELETE FROM Appointments
             WHERE appointment_id = ?
         ''', (appointment_id,))
-        cursor.execute("COMMIT")
         connection.commit()
         refresh_appointment_list(listbox)
         messagebox.showinfo("Success", "Appointment deleted successfully.")
     except sqlite3.Error as error:
+        connection.rollback()
         messagebox.showerror("Error", f"Error deleting appointment: {error}")
+
+def get_upcomming_appointments(listbox):
+    cursor.execute('''
+        SELECT * FROM upcoming_appointments
+    ''')
+    appointments = cursor.fetchall()
+    listbox.delete(0, tk.END)
+    for row in appointments:
+        appointment_info = f"ID: {row[0]}, Customer ID: {row[1]}, Vehicle ID: {row[2]}, Service ID: {row[3]}, Date: {row[4]}, Status: {row[5]}"
+        listbox.insert(tk.END, appointment_info)
 
 def refresh_appointment_list(listbox):
     listbox.delete(0, tk.END)
