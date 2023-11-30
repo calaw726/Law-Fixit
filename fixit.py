@@ -92,14 +92,26 @@ def load_main_frame():
     logo_widget.pack()
 
     # Create the buttons
+    get_upcoming_appointments_button = tk.Button(
+        welcome_frame,
+        text="Upcoming Appointments",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_upcoming_appointments(),
+        relief=tk.FLAT,
+        borderwidth=0
+    ).pack()
     edit_tables_button = tk.Button(
         welcome_frame,
         text="Edit Tables",
-        font=(font_family, 48),
-        fg="Black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda:load_edit_customer(),
         relief=tk.FLAT,
         borderwidth=0
@@ -137,7 +149,7 @@ def load_edit_customer():
             edit_customer,
             text=label,
             bg=bg_color,
-            fg="white",
+            fg=fg_color,
             font=(font_family, 12)
         ).pack()
         entry.pack()
@@ -149,10 +161,10 @@ def load_edit_customer():
         edit_customer, 
         text="Add Customer",
         font=(font_family, 18),
-        fg="black",
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: add_customer(
             entry_values[0],
             entry_values[1],
@@ -166,11 +178,11 @@ def load_edit_customer():
     edit_button = tk.Button(
         edit_customer,
         text="Edit Customer",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: modify_customer(customer_listbox),
         relief=tk.FLAT,
         borderwidth=0
@@ -185,11 +197,11 @@ def load_edit_customer():
     back_button = tk.Button(
         button_row,
         text="Back",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_main_frame(),
         relief=tk.FLAT,
         borderwidth=0
@@ -198,11 +210,11 @@ def load_edit_customer():
     vehicles_button = tk.Button(
         button_row,
         text="Vehicles",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_edit_vehicle(),
         relief=tk.FLAT,
         borderwidth=0
@@ -211,11 +223,11 @@ def load_edit_customer():
     services_button = tk.Button(
         button_row,
         text="Services",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_edit_service(),
         relief=tk.FLAT,
         borderwidth=0
@@ -224,8 +236,9 @@ def load_edit_customer():
     appointments_button = tk.Button(
         button_row,
         text="Appointments",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         activeforeground="white",
@@ -237,8 +250,9 @@ def load_edit_customer():
     invoices_button = tk.Button(
         button_row,
         text="Invoices",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         activeforeground="white",
@@ -248,8 +262,8 @@ def load_edit_customer():
     )
 
 
-    add_button.pack()
-    edit_button.pack(padx=(10, 10))
+    add_button.pack(pady=5)
+    edit_button.pack(pady=5)
     back_button.pack(side = "left", padx=10)
     vehicles_button.pack(side = "left", padx=10)
     services_button.pack(side = "left", padx=10)
@@ -290,7 +304,7 @@ def load_edit_vehicle():
             edit_vehicle,
             text=label,
             bg=bg_color,
-            fg="white",
+            fg=fg_color,
             font=(font_family, 12)
         ).pack()
         entry.pack()
@@ -299,11 +313,11 @@ def load_edit_vehicle():
     add_button = tk.Button(
         edit_vehicle,
         text = "Add Vehicle",
-        font = ("Calibri", 18),
-        fg = "black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg = fg_color,
         cursor = "hand2",
         activebackground = button_pressed_color,
-        activeforeground="white",
         command=lambda: add_vehicle(
             entry_values[0],
             entry_values[1],
@@ -318,11 +332,11 @@ def load_edit_vehicle():
     edit_button = tk.Button(
         edit_vehicle,
         text="Edit Vehicle",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: modify_vehicle(vehicle_listbox),
         relief=tk.FLAT,
         borderwidth=0
@@ -337,11 +351,11 @@ def load_edit_vehicle():
     back_button = tk.Button(
         button_row,
         text="Back",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_main_frame(),
         relief=tk.FLAT,
         borderwidth=0
@@ -350,11 +364,11 @@ def load_edit_vehicle():
     customers_button = tk.Button(
         button_row,
         text="Customers",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_edit_customer(),
         relief=tk.FLAT,
         borderwidth=0
@@ -363,11 +377,11 @@ def load_edit_vehicle():
     services_button = tk.Button(
         button_row,
         text="Services",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_edit_service(),
         relief=tk.FLAT,
         borderwidth=0
@@ -376,11 +390,11 @@ def load_edit_vehicle():
     appointments_button = tk.Button(
         button_row,
         text="Appointments",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_edit_appointment(),
         relief=tk.FLAT,
         borderwidth=0
@@ -389,11 +403,11 @@ def load_edit_vehicle():
     invoices_button = tk.Button(
         button_row,
         text="Invoices",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 18),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_edit_invoice(),
         relief=tk.FLAT,
         borderwidth=0
@@ -448,8 +462,9 @@ def load_edit_service():
     add_button = tk.Button(
         edit_service,
         text="Add Service",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         activeforeground="white",
@@ -465,8 +480,9 @@ def load_edit_service():
     get_description_button = tk.Button(
         edit_service,
         text="Get Description",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: get_description(
@@ -480,11 +496,11 @@ def load_edit_service():
     edit_button = tk.Button(
         edit_service,
         text="Edit Service",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: modify_service(service_listbox),
         relief=tk.FLAT,
         borderwidth=0
@@ -493,8 +509,9 @@ def load_edit_service():
     delete_button = tk.Button(
         edit_service,
         text="Delete Service",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: delete_service(service_listbox),
@@ -511,11 +528,11 @@ def load_edit_service():
     back_button = tk.Button(
         button_row,
         text="Back",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command=lambda: load_main_frame(),
         relief=tk.FLAT,
         borderwidth=0
@@ -524,11 +541,11 @@ def load_edit_service():
     customers_button = tk.Button(
         button_row,
         text="Customers",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground="white",
         command = lambda: load_edit_customer(),
         relief=tk.FLAT,
         borderwidth=0
@@ -537,11 +554,11 @@ def load_edit_service():
     vehicles_button = tk.Button(
         button_row,
         text="Vehicles",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
-        activeforeground = "white",
         command=lambda: load_edit_vehicle(),
         relief=tk.FLAT,
         borderwidth=0
@@ -550,8 +567,9 @@ def load_edit_service():
     appointments_button = tk.Button(
         button_row,
         text="Appointments",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_edit_appointment(),
@@ -562,8 +580,9 @@ def load_edit_service():
     invoices_button = tk.Button(
         button_row,
         text="Invoices",
-        font=("Calibri", 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_edit_invoice(),
@@ -572,10 +591,10 @@ def load_edit_service():
     )
 
     # Pack the input fields and buttons
-    add_button.pack()
-    get_description_button.pack()
-    edit_button.pack(padx=(10, 10))
-    delete_button.pack(padx=(10, 10))
+    add_button.pack(pady=5)
+    get_description_button.pack(pady=5)
+    edit_button.pack(padx=(10, 10), pady=5)
+    delete_button.pack(padx=(10, 10), pady=5)
     back_button.pack(side = "left", padx=10)
     customers_button.pack(side = "left", padx=10)
     vehicles_button.pack(side = "left", padx=10)
@@ -621,7 +640,7 @@ def load_edit_appointment():
     date_entry = tk.Entry(right_frame)
     date_entry.grid(row = 0, column = 0, padx = 10, sticky="ew")
 
-    time_label = tk.Label(right_frame, text="Appointment Time: \n Reminder that we accept appointments \n between 8:00 and 17:00", bg=bg_color, fg="white", font=(font_family, 12))
+    time_label = tk.Label(right_frame, text="Appointment Time: \n Reminder that we accept appointments \n between 8:00 and 17:00", bg=bg_color, fg="white", font=(font_family, 10))
     time_label.grid(row = 0, column = 1, padx = 5, sticky="w")
 
     hour_spinbox = Spinbox(time_frame, from_=8, to = 17, width = 2)
@@ -634,14 +653,27 @@ def load_edit_appointment():
     calendar = Calendar(right_frame, selectmode="day")
     calendar.grid(row = 1, column = 0, padx = 10, sticky="nsw")
 
-    select_date_button = tk.Button(right_frame, text="Select Date",font = (font_family, 12), bg=bg_color, command = lambda: get_selected_date(calendar, date_entry, hour_spinbox, minute_spinbox, True))
+    select_date_button = tk.Button(
+        right_frame,
+        text="Select Date", 
+        font = (font_family, 12),
+        bg=button_color,
+        fg=fg_color,
+        command = lambda: get_selected_date(
+            calendar,
+            date_entry,
+            hour_spinbox,
+            minute_spinbox,
+            True
+        )
+        )
     select_date_button.grid(row = 2, column = 0, padx = 10, sticky="ew")
 
     customer_id_label = tk.Label(
         left_frame,
         text="Customer ID:",
         bg=bg_color,
-        fg="white",
+        fg=fg_color,
         font=(font_family, 12)
     )
     customer_id_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
@@ -651,7 +683,7 @@ def load_edit_appointment():
         left_frame,
         text="Service Name:",
         bg=bg_color,
-        fg="white",
+        fg=fg_color,
         font=(font_family, 12)
     )
     service_label.grid(row=2, column=0, sticky="w", padx=(0, 10))
@@ -676,7 +708,9 @@ def load_edit_appointment():
         left_frame,
         text="Update Vehicle List",
         font = (font_family, 12),
-        bg=bg_color,
+        bg=button_color,
+        fg=fg_color,
+        activebackground=button_pressed_color,
         command = lambda: get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_combobox),
         cursor = "hand2",
         relief=tk.FLAT,
@@ -706,8 +740,9 @@ def load_edit_appointment():
     add_button = tk.Button(
         button_column,
         text="Add Appointment",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 12),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: add_appointment(
@@ -725,8 +760,9 @@ def load_edit_appointment():
     edit_button = tk.Button(
         button_column,
         text="Edit Appointment",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 12),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: modify_appointment(appointment_listbox),
@@ -737,8 +773,9 @@ def load_edit_appointment():
     delete_button = tk.Button(
         button_column,
         text="Delete Appointment",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 12),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: delete_appointment(appointment_listbox),
@@ -755,8 +792,9 @@ def load_edit_appointment():
     back_button = tk.Button(
         button_row,
         text="Back",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_main_frame(),
@@ -767,8 +805,9 @@ def load_edit_appointment():
     customers_button = tk.Button(
         button_row,
         text="Customers",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_edit_customer(),
@@ -779,8 +818,9 @@ def load_edit_appointment():
     vehicles_button = tk.Button(
         button_row,
         text="Vehicles",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_edit_vehicle(),
@@ -791,8 +831,9 @@ def load_edit_appointment():
     services_button = tk.Button(
         button_row,
         text="Services",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_edit_service(),
@@ -803,8 +844,9 @@ def load_edit_appointment():
     invoices_button = tk.Button(
         button_row,
         text="Invoices",
-        font=(font_family, 18),
-        fg="black",
+        font=(font_family, 16),
+        bg=button_color,
+        fg=fg_color,
         cursor="hand2",
         activebackground=button_pressed_color,
         command=lambda: load_edit_invoice(),
@@ -812,9 +854,9 @@ def load_edit_appointment():
         borderwidth=0
     )
 
-    add_button.grid(row = 0, column = 0, padx=(10, 0), sticky="ew")
-    edit_button.grid(row = 1, column = 0, padx=(10, 0), sticky="ew")
-    delete_button.grid(row = 2, column = 0, padx=(10, 0), sticky="ew")
+    add_button.grid(row = 0, column = 0, padx=(10, 0), pady=5, sticky="ew")
+    edit_button.grid(row = 1, column = 0, padx=(10, 0), pady=5, sticky="ew")
+    delete_button.grid(row = 2, column = 0, padx=(10, 0), pady = 5, sticky="ew")
     back_button.pack(side = "left", padx=10)
     customers_button.pack(side = "left", padx=10)
     vehicles_button.pack(side = "left", padx=10)
@@ -937,6 +979,41 @@ def load_edit_invoice():
 
     refresh_invoice_list(invoice_listbox)
 
+def load_upcoming_appointments():
+    upcoming_appointments_frame = tk.Frame(root, width=window_width, height=window_height, bg=bg_color)
+    upcoming_appointments_frame.grid(row=0, column=0, sticky="nesw")
+    upcoming_appointments_frame.pack_propagate(False)
+
+    for frame in frames:
+        frame.destroy()
+    
+    frames.append(upcoming_appointments_frame)
+
+    # Create a listbox to display upcoming appointments
+    upcoming_appointments_listbox = tk.Listbox(upcoming_appointments_frame)
+    upcoming_appointments_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
+
+    get_upcomming_appointments(upcoming_appointments_listbox)
+
+    button_row = tk.Frame(upcoming_appointments_frame, bg=bg_color)
+    button_row.grid(row=1, column=0, sticky="nesw")
+    button_row.pack(side=tk.BOTTOM)
+
+    back_button = tk.Button(
+        button_row,
+        text="Back",
+        font=(font_family, 18),
+        fg="black",
+        cursor="hand2",
+        activebackground=button_pressed_color,
+        command=lambda: load_main_frame(),
+        relief=tk.FLAT,
+        borderwidth=0
+    ).pack()
+
+    upcoming_appointments_frame.grid_rowconfigure(0, weight=3)
+    button_row.grid_rowconfigure(0, weight=1)
+
 
 def get_logo(path=r'assets/logo.jpg', resize_factor=0.5):
     try:
@@ -959,8 +1036,8 @@ fg_color = "#FFFFFF"
 button_color = "#1b4298"
 button_pressed_color = "#becff4"
 
-window_width = 800
-window_height = 600
+window_width = 1000
+window_height = 750
 
 root = tk.Tk()
 root.title("Law-Fixit DBMS")
@@ -976,7 +1053,7 @@ is_macos = root.tk.call('tk', 'windowingsystem') == 'aqua'
 if is_macos:
     font_family = "San Francisco"  # Use Helvetica as a fallback on macOS
 else:
-    font_family = "Arial"  # Use Arial on other systems
+    font_family = "Verdana"  # Use Arial on other systems
 
 load_main_frame()
 
