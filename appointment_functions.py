@@ -56,6 +56,13 @@ def service_exists(service_id):
     ''', (service_id,))
     return cursor.fetchone()
 
+def get_service_cost(service_id):
+    cursor.execute('''
+        SELECT price FROM Services WHERE service_id = ?
+    ''', (service_id,))
+    return cursor.fetchone()[0]
+
+
 def remove_punctuation(in_string):
     translation_table = str.maketrans("", "", string.punctuation)
 
@@ -83,10 +90,26 @@ def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_ent
         messagebox.showerror("Error", "Service ID does not exist.")
         return
     try:
+        # Begin the Transaction
+        cursor.execute("BEGIN TRANSACTION")
+
+        # Get the price of the selected service
+        service_cost = get_service_cost(service_id)
+
+        # Add the appointment
         cursor.execute('''
             INSERT INTO Appointments (customer_id, vehicle_id, service_id, appointment_date, status)
             VALUES (?, ?, ?, ?, ?)
         ''', (customer_id, vehicle_id, service_id, appointment_date, status))
+
+        # Add the invoice
+        cursor.execute('''
+            INSERT INTO Invoices (appointment_id, total_cost, payment_status, date_paid)
+            VALUES (?, ?, ?, NULL)
+        ''', (cursor.lastrowid, service_cost, "Unpaid"))
+
+        # Commit the Transaction
+        cursor.execute("COMMIT")
         connection.commit()
         refresh_appointment_list(listbox)
 
@@ -241,10 +264,16 @@ def delete_appointment(listbox):
         return
     
     try:
+        cursor.execute("BEGIN TRANSACTION")
+        cursor.execute('''
+            DELETE FROM Invoices
+            WHERE appointment_id = ?
+        ''', (appointment_id,))
         cursor.execute('''
             DELETE FROM Appointments
             WHERE appointment_id = ?
         ''', (appointment_id,))
+        cursor.execute("COMMIT")
         connection.commit()
         refresh_appointment_list(listbox)
         messagebox.showinfo("Success", "Appointment deleted successfully.")
