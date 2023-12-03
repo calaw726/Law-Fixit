@@ -37,5 +37,11 @@ Currrently tested on Anaconda Python 3.11.5 and Tkinter 8.6
 To get libaries:
 
 ```
-pip3 install tkinter tkcalendar pillow
+pip3 install tkcalendar pillow
+```
+
+Note: tkinter should already be installed.
+If not, and you are using anaconda, use
+```
+conda install -c anaconda tk
 ```
