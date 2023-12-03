@@ -1014,6 +1014,7 @@ root = tk.Tk()
 root.title("Law-Fixit DBMS")
 root.geometry(f'{window_width}x{window_height}')
 center_window(root, window_width, window_height)
+
 root.eval("tk::PlaceWindow . center")
 root.resizable(False, False)
 
@@ -1024,7 +1025,9 @@ is_macos = root.tk.call('tk', 'windowingsystem') == 'aqua'
 # Set the font based on the operating system
 if is_macos:
     font_family = "San Francisco"  # Use Helvetica as a fallback on macOS
+    root.iconphoto(True, tk.PhotoImage(file="assets/logo.png"))
 else:
+    root.iconbitmap(default="assets/logo.ico")
     font_family = "Verdana"  # Use Arial on other systems
 
 load_main_frame()
