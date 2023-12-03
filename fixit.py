@@ -15,7 +15,10 @@ connection = sqlite3.connect('mechanic_shop.db')
 cursor = connection.cursor()
 
 def get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_combobox):
-    customer_id = customer_id_entry.get()
+    if not(customer_id_entry.get() and customer_id_entry.get()[0].isdigit()):
+        messagebox.showerror("Error", "Please select a customer in the dropdown menu above.")
+        return
+    customer_id = customer_id_entry.get()[0]
     try:
         cursor.execute('''
             SELECT VIN, year, make, model FROM Vehicles WHERE customer_id = ?
@@ -44,6 +47,37 @@ def get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_combobox):
         
         # Bind the event handler to the <<ComboboxSelected>> event
         vehicle_combobox.bind("<<ComboboxSelected>>", set_vehicle_var)
+
+def get_customers_with_vehicles(customer_var, customer_combobox):
+    try:
+        cursor.execute('''
+            SELECT * FROM customers_with_vehicles;
+        ''')
+        customers = cursor.fetchall()
+    except sqlite3.Error as e:
+        messagebox.showerror("Error", e)
+        return
+    # Clear Values in Combobox
+    customer_combobox.set("")
+    customer_combobox['values'] = []
+    if not customers:
+        messagebox.showerror("Error", "No customers found.")
+    else:
+        # Extract customer IDs from the result and create a list of strings for the combobox
+        display_values = [f"{id}: {first_name} {last_name}" for id, first_name, last_name in customers]
+
+        # Set the values of the combobox
+        customer_combobox['values'] = display_values
+
+        # Function to set the selected customer_id in the variable
+        def set_customer_var(event):
+            index = customer_combobox.current()
+            if index >= 0:
+                customer_var.set(customers[index][0])
+        
+        # Bind the event handler to the <<ComboboxSelected>> event
+        customer_combobox.bind("<<ComboboxSelected>>", set_customer_var)
+
 def get_services():
     cursor.execute('''
         SELECT service_id, service_name FROM Services
@@ -89,7 +123,7 @@ def load_main_frame():
     logo_img = ImageTk.PhotoImage(get_logo())
     logo_widget = tk.Label(welcome_frame, image=logo_img, bg=bg_color)
     logo_widget.image = logo_img
-    logo_widget.pack()
+    logo_widget.pack(fill=tk.BOTH)
 
     # Create the buttons
     get_upcoming_appointments_button = tk.Button(
@@ -98,6 +132,14 @@ def load_main_frame():
         font=(font_family, 18),
         cursor="hand2",
         command=lambda: load_upcoming_appointments(),
+        borderwidth=0
+    ).pack()
+    process_transaction_button = tk.Button(
+        welcome_frame,
+        text="Process Transaction",
+        font=(font_family, 18),
+        cursor="hand2",
+        command=lambda: load_edit_invoice(),
         borderwidth=0
     ).pack()
     edit_tables_button = tk.Button(
@@ -109,6 +151,7 @@ def load_main_frame():
         command=lambda:load_edit_customer(),
         borderwidth=0
     ).pack()
+
 
     center_window(root, window_width, window_height)
 
@@ -264,10 +307,12 @@ def load_edit_vehicle():
     vehicle_listbox = tk.Listbox(edit_vehicle)
     vehicle_listbox.pack(fill=tk.BOTH, padx=10, pady=10)
 
+    customer_var = tk.StringVar()
+
     # Create input fields and buttons for managing vehicles
     enties_and_labels = [
         ("VIN:", tk.Entry(edit_vehicle)),
-        ("Customer ID:", tk.Entry(edit_vehicle)),
+        ("Customer ID:", ttk.Combobox(edit_vehicle, state="readonly")),
         ("Make:", tk.Entry(edit_vehicle)),
         ("Model:", tk.Entry(edit_vehicle)),
         ("Year:", tk.Entry(edit_vehicle))
@@ -287,6 +332,8 @@ def load_edit_vehicle():
         entry.pack()
         entry_values.append(entry)
 
+    list_customers(customer_var, enties_and_labels[1][1])
+
     add_button = tk.Button(
         edit_vehicle,
         text = "Add Vehicle",
@@ -295,7 +342,7 @@ def load_edit_vehicle():
         activebackground = button_pressed_color,
         command=lambda: add_vehicle(
             entry_values[0],
-            entry_values[1],
+            customer_var,
             entry_values[2],
             entry_values[3],
             entry_values[4],
@@ -603,7 +650,6 @@ def load_edit_appointment():
         text="Select Date", 
         font = (font_family, 12),
         bg=button_color,
-        fg=fg_color,
         command = lambda: get_selected_date(
             calendar,
             date_entry,
@@ -622,8 +668,12 @@ def load_edit_appointment():
         font=(font_family, 12)
     )
     customer_id_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
-    customer_id_entry = tk.Entry(left_frame)
-    customer_id_entry.grid(row=1, column=0, sticky="w", padx=(0, 10))
+    customer_var = tk.StringVar()
+    customer_combobox = ttk.Combobox(left_frame, textvariable=customer_var, state="readonly")
+    customer_combobox.grid(row=1, column=0, sticky="w", padx=(0, 10))
+    get_customers_with_vehicles(customer_var, customer_combobox)
+
+
     service_label = tk.Label(
         left_frame,
         text="Service Name:",
@@ -654,7 +704,7 @@ def load_edit_appointment():
         text="Update Vehicle List",
         font = (font_family, 12),
         activebackground=button_pressed_color,
-        command = lambda: get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_combobox),
+        command = lambda: get_vehicles_for_customer(customer_var, vehicle_var, vehicle_combobox),
         cursor = "hand2",
         relief=tk.FLAT,
         borderwidth=0
@@ -688,7 +738,7 @@ def load_edit_appointment():
         activebackground=button_pressed_color,
         command=lambda: add_appointment(
             appointment_listbox,
-            customer_id_entry,
+            customer_var,
             vehicle_var,
             selected_service,
             date_entry,
@@ -965,6 +1015,7 @@ root.title("Law-Fixit DBMS")
 root.geometry(f'{window_width}x{window_height}')
 center_window(root, window_width, window_height)
 root.eval("tk::PlaceWindow . center")
+root.resizable(False, False)
 
 frames = []
 

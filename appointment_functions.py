@@ -84,7 +84,7 @@ def remove_punctuation(in_string):
     return result
 
 def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_entry, appointment_date_entry, status_entry):
-    customer_id = customer_id_entry.get()
+    customer_id = customer_id_entry.get()[0]
     vehicle_id = remove_punctuation(vehicle_id_entry.get())
     service_id = service_id_entry.get()[0]
     appointment_date = appointment_date_entry.get()
@@ -123,11 +123,9 @@ def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_ent
         refresh_appointment_list(listbox)
 
         # Clear the entry widgets
-        for entry in (customer_id_entry, appointment_date_entry):
-            entry.delete(0, tk.END)
-        vehicle_id_entry.set("")
-        service_id_entry.set("")
-        status_entry.set("")
+        appointment_date_entry.delete(0, tk.END)
+        for entry in (customer_id_entry, vehicle_id_entry, service_id_entry, status_entry):
+            entry.set("")
     except sqlite3.Error as error:
         messagebox.showerror("Error", f"Error adding appointment: {error}")
         connection.rollback()

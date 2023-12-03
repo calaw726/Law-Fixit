@@ -52,7 +52,7 @@ def valid_year(year):
 
 def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entry, vehicle_listbox):
     vin = vin_entry.get().upper()
-    customer_id = customer_id_entry.get()
+    customer_id = customer_id_entry.get()[0]
     make = make_entry.get()
     model = model_entry.get()
     year = year_entry.get()
@@ -81,8 +81,9 @@ def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entr
         connection.commit()
         refresh_vehicle_list(vehicle_listbox)
 
-        for entry in (vin_entry, customer_id_entry, make_entry, model_entry, year_entry):
+        for entry in (vin_entry, make_entry, model_entry, year_entry):
             entry.delete(0, tk.END)
+        customer_id_entry.set("")
         messagebox.showinfo("Success", "Vehicle added successfully.")
     except sqlite3.Error as error:
         messagebox.showerror("Error", f"Error adding vehicle: {error}")

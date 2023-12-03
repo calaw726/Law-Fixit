@@ -1,7 +1,7 @@
 import sqlite3
 import re
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 
 # Create the Customers table (you should also create other tables similarly)
 connection = sqlite3.connect('mechanic_shop.db')
@@ -30,6 +30,38 @@ def is_valid_phone_number(phone_number):
 
     # Check if the cleaned phone number contains only digits and is between 7 and 15 digits long
     return cleaned_number.isdigit() and 7 <= len(cleaned_number) <= 15
+
+def list_customers(customer_var, customer_combobox):
+    try:
+        cursor.execute('SELECT customer_id, first_name, last_name FROM Customers')
+        customers = cursor.fetchall()
+    except sqlite3.Error as error:
+        messagebox.showerror("Error", f"Error retrieving customers: {error}")
+        return
+    
+    # Clear the Combobox
+    customer_combobox.set("")
+    customer_combobox['values'] = ()
+    if not customers:
+        messagebox.showinfo("Error", "No customers found.")
+        return
+    else:
+        # Extract the customer names from the list of customers
+        customer_values = [f"{id}: {first_name} {last_name}" for id, first_name, last_name in customers]
+
+        # Set the Combobox values
+        customer_combobox['values'] = customer_values
+
+        # Function to set the selected customer in the variable
+        def set_customer(event):
+            customer_var.set(customer_combobox.get())
+            index = customer_combobox.current()
+            if index >= 0:
+                customer_id = customers[index][0]
+                customer_var.set(customer_id)
+
+        # Bind the set_customer function to the Combobox
+        customer_combobox.bind("<<ComboboxSelected>>", set_customer)
 
 def add_customer(first_name_entry, last_name_entry, phone_number_entry, email_entry, listbox):
     first_name = first_name_entry.get()
