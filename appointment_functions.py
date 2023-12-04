@@ -4,6 +4,7 @@ from tkinter import ttk
 import string
 from tkinter import messagebox
 from tkcalendar import Calendar
+from service_functions import get_services
 from time_utils import *
 
 # Create the Appointments table
@@ -36,13 +37,7 @@ try:
 except sqlite3.Error as error:
     messagebox.showerror("Error", f"Error initializing Appointments table: {error}")
 
-def get_services():
-    # Stored Procedure that lists service_id and service_name
-    cursor.execute('''
-        SELECT * FROM service_view
-    ''')
-    services = cursor.fetchall()
-    return services
+
 
 def get_vehicle_ids(customer_id):
     cursor.execute('''
@@ -75,13 +70,21 @@ def get_service_cost(service_id):
     ''', (service_id,))
     return cursor.fetchone()[0]
 
-
 def remove_punctuation(in_string):
     translation_table = str.maketrans("", "", string.punctuation)
 
     result = in_string.translate(translation_table)
 
     return result
+
+def get_appointments():
+    try:
+        cursor.execute('SELECT appointment_id FROM Appointments')
+        appointments = cursor.fetchall()
+        return appointments
+    except sqlite3.Error as e:
+        messagebox.showerror(f"Error fetching appointments {e}")
+        return
 
 def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_entry, appointment_date_entry, status_entry):
     customer_id = customer_id_entry.get()[0]

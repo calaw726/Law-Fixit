@@ -2,6 +2,7 @@ import sqlite3
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
+from regex_fcns import get_id
 
 try:
     connection = sqlite3.connect("mechanic_shop.db")
@@ -16,15 +17,35 @@ try:
             FOREIGN KEY(customer_id) REFERENCES Customers(customer_id)
         )
     ''')
-    # Create an idex on the customer_id column
+    connection.commit()
+    # Create an index on the customer_id column
     # This improves performance when the appointments window searches for vehicles by customer_id
     cursor.execute('''
         CREATE INDEX IF NOT EXISTS customer_id_index
         ON Vehicles(customer_id)
     ''')
     connection.commit()
+    
+    #Create a view on customers that have vehicles
+    cursor.execute('''
+        CREATE VIEW IF NOT EXISTS customers_with_vehicles AS                      
+            SELECT DISTINCT customers.customer_id, customers.first_name, customers.last_name                                        
+            FROM Customers                                              
+            JOIN vehicles ON customers.customer_id = vehicles.customer_id
+    ''')
+    connection.commit()
+
 except sqlite3.Error as error:
     messagebox.showerror("Error", f"Error initialzing Vehicles table: {error}")
+    connection.rollback()
+
+def get_vehicles():
+    try:
+        cursor.execute('SELECT VIN, make, model FROM Vehicles')
+        vehicles = cursor.fetchall()
+        return vehicles
+    except sqlite3.Error as error:
+        messagebox.showerror("Error", f"Error getting vehicles: {error}")
 
 def customer_exists(customer_id):
     cursor.execute('''
@@ -52,7 +73,7 @@ def valid_year(year):
 
 def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entry, vehicle_listbox):
     vin = vin_entry.get().upper()
-    customer_id = customer_id_entry.get()[0]
+    customer_id = customer_id_entry.get()
     make = make_entry.get()
     model = model_entry.get()
     year = year_entry.get()
@@ -86,8 +107,7 @@ def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entr
         customer_id_entry.set("")
         messagebox.showinfo("Success", "Vehicle added successfully.")
     except sqlite3.Error as error:
-        messagebox.showerror("Error", f"Error adding vehicle: {error}")
-    
+        messagebox.showerror("Error", f"Error adding vehicle: {error}")  
 
 def modify_vehicle(vehicle_listbox):
     selected_index = vehicle_listbox.curselection()
@@ -144,7 +164,6 @@ def modify_vehicle(vehicle_listbox):
     # Button to save changes
     save_button = tk.Button(edit_window, text="Save", command=save_changes).pack()
     
-
 def refresh_vehicle_list(listbox):
     cursor.execute('''
         SELECT * FROM Vehicles

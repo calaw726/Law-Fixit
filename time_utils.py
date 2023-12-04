@@ -27,8 +27,7 @@ def get_selected_date(calendar, date_entry, hour_spinbox, minute_spinbox, check)
         selected_datetime = selected_date.strftime('%m/%d/%Y')
     
     # Update the date entry widget
-    date_entry.delete(0, tk.END)
-    date_entry.insert(0, selected_datetime)
+    date_entry.set(selected_datetime)
 
         
 

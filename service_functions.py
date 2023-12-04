@@ -2,17 +2,36 @@ import sqlite3
 import tkinter as tk
 from tkinter import messagebox
 
-connection = sqlite3.connect("mechanic_shop.db")
-cursor = connection.cursor()
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Services (
-        service_id INTEGER PRIMARY KEY,
-        service_name TEXT,
-        description TEXT,
-        price REAL
-    )
-''')
-connection.commit()
+try:
+    connection = sqlite3.connect("mechanic_shop.db")
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Services (
+            service_id INTEGER PRIMARY KEY,
+            service_name TEXT,
+            description TEXT,
+            price REAL
+        )
+    ''')
+    connection.commit()
+
+    # Create a view on services that lists service_id and service_name
+    cursor.execute('''
+        CREATE VIEW IF NOT EXISTS service_view AS
+            SELECT service_id, service_name FROM Services
+    ''')
+    connection.commit()
+except sqlite3.Error as error:
+        messagebox.showerror("Error", f"Error initialzing Services table: {error}")
+        connection.rollback()
+
+def get_services():
+    # Stored Procedure that lists service_id and service_name
+    cursor.execute('''
+        SELECT * FROM service_view
+    ''')
+    services = cursor.fetchall()
+    return services
 
 def valid_service_id(service_id):
     if not service_id.isdigit():
