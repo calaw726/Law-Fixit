@@ -4,6 +4,18 @@ import tkinter as tk
 from tkinter import messagebox, Spinbox, ttk
 from tkcalendar import Calendar
 from PIL import ImageTk, Image
+
+# Background and foreground colors
+BG_COLOR = "#08142E"
+FG_COLOR = "#FFFFFF"
+BT_COLOR = "#1b4298"
+BT_P_COLOR = "#becff4"
+
+# Window dimensions
+WIN_W = 1000
+WIN_H = 750
+
+
 from customer_functions import *
 from vehicle_functions import *
 from service_functions import *
@@ -56,7 +68,7 @@ def get_vehicles_for_customer(customer_id_entry, vehicle_var, vehicle_combobox):
     try:
         cursor.execute('''
             SELECT VIN, year, make, model FROM Vehicles WHERE customer_id = ?
-        ''', (customer_id[0],))
+        ''', (customer_id,))
         vehicles = cursor.fetchall()
     except sqlite3.Error as e:
         messagebox.showerror("Error", e)
@@ -547,18 +559,6 @@ def get_logo(path=None, resize_factor=0.5):
     except FileNotFoundError:
         print(f"Error: logo.jpg not found at: {path}")
         return None
-
-
-
-# Background and foreground colors
-BG_COLOR = "#08142E"
-FG_COLOR = "#FFFFFF"
-BT_COLOR = "#1b4298"
-BT_P_COLOR = "#becff4"
-
-# Window dimensions
-WIN_W = 1000
-WIN_H = 750
 
 root = tk.Tk()
 root.title("Law-Fixit DBMS")
