@@ -90,7 +90,7 @@ def get_appointments():
         return
 
 def add_appointment(listbox, customer_id_entry, vehicle_id_entry, service_id_entry, appointment_date_entry, status_entry):
-    customer_id = customer_id_entry.get()[0]
+    customer_id = customer_id_entry.get()
     vehicle_id = remove_punctuation(vehicle_id_entry.get())
     service_id = service_id_entry.get()[0]
     appointment_date = appointment_date_entry.get()
