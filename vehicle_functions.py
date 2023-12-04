@@ -2,7 +2,6 @@ import sqlite3
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
-from regex_fcns import get_id
 
 try:
     connection = sqlite3.connect("mechanic_shop.db")
@@ -103,9 +102,6 @@ def list_vechicles(vehicle_var, combobox):
     # Bind the set_vehicle function to the Combobox
     combobox.bind("<<ComboboxSelected>>", set_vehicle)
 
-
-
-
 def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entry, vehicle_listbox):
     vin = vin_entry.get().upper()
     customer_id = customer_id_entry.get()
@@ -142,6 +138,7 @@ def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entr
         customer_id_entry.set("")
         messagebox.showinfo("Success", "Vehicle added successfully.")
     except sqlite3.Error as error:
+        connection.rollback()
         messagebox.showerror("Error", f"Error adding vehicle: {error}")  
 
 def modify_vehicle(vehicle_listbox):
@@ -192,6 +189,7 @@ def modify_vehicle(vehicle_listbox):
             refresh_vehicle_list(vehicle_listbox)
             messagebox.showinfo("Success", "Vehicle updated successfully.")
         except sqlite3.Error as error:
+            connection.rollback()
             messagebox.showerror("Error", f"Error updating vehicle: {error}")
         refresh_vehicle_list(vehicle_listbox)
         edit_window.destroy()

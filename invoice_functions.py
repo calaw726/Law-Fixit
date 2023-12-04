@@ -4,18 +4,23 @@ from tkinter import messagebox, ttk
 from time_utils import get_curr_date
 
 # Create the Invoices table
-connection = sqlite3.connect('mechanic_shop.db')
-cursor = connection.cursor()
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Invoices (
-        invoice_id INTEGER PRIMARY KEY,
-        appointment_id INTEGER,
-        total_cost REAL,
-        payment_status TEXT,
-        date_paid TEXT,
-        FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id)
-    )
-''')
+try:
+    connection = sqlite3.connect('mechanic_shop.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Invoices (
+            invoice_id INTEGER PRIMARY KEY,
+            appointment_id INTEGER,
+            total_cost REAL,
+            payment_status TEXT,
+            date_paid TEXT,
+            FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id)
+        )
+    ''')
+    connection.commit()
+except sqlite3.Error as error:
+    connection.rollback()
+    messagebox.showerror("Error", f"Error creating Invoices table: {error}")
 
 def appointment_exists(appointment_id):
     cursor.execute('''
