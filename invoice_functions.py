@@ -51,10 +51,8 @@ def add_invoice(appointment_id_entry, total_cost_entry, payment_status_entry, da
         refresh_invoice_list(listbox)
 
         # Clear the entry fields
-        appointment_id_entry.delete(0, tk.END)
-        total_cost_entry.delete(0, tk.END)
-        payment_status_entry.delete(0, tk.END)
-        date_paid_entry.delete(0, tk.END)
+        for entry in (appointment_id_entry, total_cost_entry, payment_status_entry, date_paid_entry):
+            entry.delete(0, tk.END)
     except sqlite3.IntegrityError:
         connection.rollback()
         messagebox.showerror("Error", "Appointment ID must be unique.")
@@ -101,6 +99,7 @@ def modify_invoice(listbox):
                     SET payment_status = ?, date_paid = ?
                     WHERE invoice_id = ?
                 ''', (payment_status, get_curr_date(), invoice_id))
+                connection.commit()
             else:
                 cursor.execute('''
                     UPDATE Invoices
