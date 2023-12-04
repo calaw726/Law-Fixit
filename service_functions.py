@@ -202,6 +202,7 @@ def get_description(service_listbox):
         ''', (service_id,))
         connection.commit()
     except sqlite3.Error as error:
+        connection.rollback()
         messagebox.showerror("Error", f"Error getting description: {error}.")
     description = cursor.fetchone()[0]
     messagebox.showinfo("Description", description)
