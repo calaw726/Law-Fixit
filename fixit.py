@@ -160,9 +160,9 @@ def load_main_frame():
     logo_widget.pack(fill=tk.BOTH, pady=10)
 
     # Create the buttons
-    get_upcoming_appointments_button = create_button(welcome_frame, "Upcoming Appointments", lambda: load_upcoming_appointments()).pack(pady=5)
-    process_transaction_button = create_button(welcome_frame, "Process Transaction", lambda: load_edit_invoice()).pack(pady=5)
-    edit_tables_button = create_button(welcome_frame, "Edit Tables", lambda: load_edit_customer()).pack(pady=5)
+    create_button(welcome_frame, "Upcoming Appointments", lambda: load_upcoming_appointments()).pack(pady=5)
+    create_button(welcome_frame, "Process Transaction", lambda: load_edit_invoice()).pack(pady=5)
+    create_button(welcome_frame, "Edit Tables", lambda: load_edit_customer()).pack(pady=5)
 
     center_window(root, WIN_W, WIN_H)
 
