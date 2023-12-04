@@ -71,6 +71,41 @@ def valid_year(year):
         return False
     return True
 
+def list_vechicles(vehicle_var, combobox):
+    try:
+        cursor.execute('SELECT vin FROM Vehicles')
+        vehicles = cursor.fetchall()
+    except sqlite3.Error as error:
+        messagebox.showerror("Error", f"Error retrieving vehicles: {error}")
+        return
+    
+    # Clear the Combobox
+    combobox.set("")
+    combobox['values'] = ()
+
+    if not vehicles:
+        messagebox.showerror("Error", "No vehicles found.")
+        return
+    
+    # Extract the vehicle names from the list of vehicles
+    vehicle_values = [f"{vin}" for vin in vehicles]
+
+    # Set the Combobox values
+    combobox['values'] = vehicle_values
+
+    # Function to set the selected vehicle in the variable
+    def set_vehicle(event):
+        index = combobox.current()
+        if index >= 0:
+            vin = vehicles[index][0]
+            vehicle_var.set(vin)
+
+    # Bind the set_vehicle function to the Combobox
+    combobox.bind("<<ComboboxSelected>>", set_vehicle)
+
+
+
+
 def add_vehicle(vin_entry, customer_id_entry, make_entry, model_entry, year_entry, vehicle_listbox):
     vin = vin_entry.get().upper()
     customer_id = customer_id_entry.get()

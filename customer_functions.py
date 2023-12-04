@@ -3,28 +3,36 @@ import re
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-# Create the Customers table (you should also create other tables similarly)
-connection = sqlite3.connect('mechanic_shop.db')
-cursor = connection.cursor()
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Customers (
-        customer_id INTEGER PRIMARY KEY,
-        first_name TEXT,
-        last_name TEXT,
-        phone_number TEXT,
-        email TEXT
-    )
-''')
-connection.commit()
+# Define a regular expression pattern for a valid email address
+EMAIL_PATTERN = re.compile(r'^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$')
 
-def is_valid_email(email):
-    # Define a regular expression pattern for a valid email address
-    pattern = r'^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-    
+# Create the Customers table
+try:
+    connection = sqlite3.connect('mechanic_shop.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Customers (
+            customer_id INTEGER PRIMARY KEY,
+            first_name TEXT,
+            last_name TEXT,
+            phone_number TEXT,
+            email TEXT
+        )
+    ''')
+    connection.commit()
+except sqlite3.Error as error:
+    messagebox.showerror("Error", f"Error initializing Customers table: {error}")
+    connection.rollback()
+
+def is_valid_email(email):    
     # Use the re.match() function to check if the email matches the pattern
-    return bool(re.fullmatch(pattern, email))
+    return bool(EMAIL_PATTERN.fullmatch(email))
     
 def is_valid_phone_number(phone_number):
+    # Ensure the phone number is a string
+    if not isinstance(phone_number, str):
+        return False
+    
     # Remove any non-numeric characters (e.g., spaces, dashes, parentheses)
     cleaned_number = ''.join(filter(str.isdigit, phone_number))
 
@@ -42,26 +50,25 @@ def list_customers(customer_var, customer_combobox):
     # Clear the Combobox
     customer_combobox.set("")
     customer_combobox['values'] = ()
+
     if not customers:
-        messagebox.showinfo("Error", "No customers found.")
+        messagebox.showerror("Error", "No customers found.")
         return
-    else:
-        # Extract the customer names from the list of customers
-        customer_values = [f"{id}: {first_name} {last_name}" for id, first_name, last_name in customers]
+    # Extract the customer names from the list of customers
+    customer_values = [f"{id}: {first_name} {last_name}" for id, first_name, last_name in customers]
 
-        # Set the Combobox values
-        customer_combobox['values'] = customer_values
+    # Set the Combobox values
+    customer_combobox['values'] = customer_values
 
-        # Function to set the selected customer in the variable
-        def set_customer(event):
-            customer_var.set(customer_combobox.get())
-            index = customer_combobox.current()
-            if index >= 0:
-                customer_id = customers[index][0]
-                customer_var.set(customer_id)
+    # Function to set the selected customer in the variable
+    def set_customer(event):
+        index = customer_combobox.current()
+        if index >= 0:
+            customer_id = customers[index][0]
+            customer_var.set(customer_id)
 
-        # Bind the set_customer function to the Combobox
-        customer_combobox.bind("<<ComboboxSelected>>", set_customer)
+    # Bind the set_customer function to the Combobox
+    customer_combobox.bind("<<ComboboxSelected>>", set_customer)
 
 def add_customer(first_name_entry, last_name_entry, phone_number_entry, email_entry, listbox):
     first_name = first_name_entry.get()
@@ -91,10 +98,8 @@ def add_customer(first_name_entry, last_name_entry, phone_number_entry, email_en
         refresh_customer_list(listbox)
 
         # Clear the entry widgets
-        first_name_entry.delete(0, tk.END)
-        last_name_entry.delete(0, tk.END)
-        phone_number_entry.delete(0, tk.END)
-        email_entry.delete(0, tk.END)
+        for entry in (first_name_entry, last_name_entry, phone_number_entry, email_entry):
+            entry.delete(0, tk.END)
 
         messagebox.showinfo("Success", "Customer added successfully.")
     except sqlite3.Error as error:
@@ -110,13 +115,14 @@ def modify_customer(customer_listbox):
     if not selected_index:
         messagebox.showerror("Error", "Please select a customer to edit.")
         return
+    
     try:
         # Extract the customer_id from the selected item
         customer_entry = customer_listbox.get(selected_index)
-        customer_id = int(customer_entry.split("ID: ")[1].split(",")[0])
-        existing_phone = customer_entry.split("Phone: ")[1].split(",")[0]
-        existing_email = customer_entry.split("Email: ")[1].split(",")[0]
-    except (ValueError, IndexError):
+        _, customer_id = re.search(r'ID: (\d+)', customer_entry).groups()
+        existing_phone = re.search(r'Phone: (.*?),', customer_entry).group(1)
+        existing_email = re.search(r'Email: (.*?),', customer_entry).group(1)
+    except (AttributeError):
         messagebox.showerror("Error", "Unable to extract customer ID.")
         return
     
@@ -125,7 +131,6 @@ def modify_customer(customer_listbox):
     edit_window.title("Edit Customer")# Create an edit dialog window
     
     # Create Entry widgets for the new phone and email
-
     entries_and_labels = [
         ("New Phone:", existing_phone),
         ("New Email:", existing_email)
@@ -167,6 +172,7 @@ def modify_customer(customer_listbox):
         except sqlite3.Error as e:
             connection.rollback()
             print("Error updating customer phone and email:", e)
+            return
 
         edit_window.destroy()
         refresh_customer_list(customer_listbox)
@@ -184,8 +190,13 @@ def refresh_customer_list(listbox):
     customers = cursor.fetchall()
 
     listbox.delete(0, tk.END)
+
+    # Use a list comprehension for constructing customer_info strings
+    customer_infos = [
+        f"ID: {customer[0]}, Name: {customer[1]} {customer[2]}, Phone: {customer[3]}, Email: {customer[4]}"
+        for customer in customers
+    ]
     
-    for customer in customers:
-        customer_info = f"ID: {customer[0]}, Name: {customer[1]} {customer[2]}, Phone: {customer[3]}, Email: {customer[4]}"
+    for customer_info in customer_infos:
         listbox.insert(tk.END, customer_info)
 

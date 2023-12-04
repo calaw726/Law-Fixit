@@ -24,6 +24,7 @@ try:
             FOREIGN KEY (service_id) REFERENCES Services(service_id)
         )
     ''')
+    connection.commit()
 
     # Create a Stored Procedure to get the upcoming appointments
     cursor.execute('''
@@ -36,38 +37,40 @@ try:
     connection.commit()
 except sqlite3.Error as error:
     messagebox.showerror("Error", f"Error initializing Appointments table: {error}")
+    connection.rollback()
 
+def create_combobox(frame, label_text, values, default_value):
+    if label_text:
+        label = tk.Label(frame, text=label_text)
+        label.pack()
+    
+    var = tk.StringVar()
+    combobox = ttk.Combobox(frame, textvariable=var)
+    combobox['values'] = values
+    combobox.set(default_value)
+    combobox.pack()
 
+    return var, combobox
 
 def get_vehicle_ids(customer_id):
-    cursor.execute('''
-        SELECT VIN FROM Vehicles WHERE customer_id = ?
-    ''', (customer_id,))
+    cursor.execute('SELECT VIN FROM Vehicles WHERE customer_id = ?', (customer_id,))
     vehicle_ids = [row[0] for row in cursor.fetchall()]
     return vehicle_ids
 
 def appointment_exists(appointment_id):
-    cursor.execute('''
-        SELECT * FROM Appointments WHERE appointment_id = ?
-    ''', (appointment_id,))
+    cursor.execute('SELECT * FROM Appointments WHERE appointment_id = ?', (appointment_id,))
     return cursor.fetchone()
 
 def customer_exists(customer_id):
-    cursor.execute('''
-        SELECT * FROM Customers WHERE customer_id = ?
-    ''', (customer_id,))
+    cursor.execute('SELECT * FROM Customers WHERE customer_id = ?', (customer_id,))
     return cursor.fetchone()
 
 def service_exists(service_id):
-    cursor.execute('''
-        SELECT * FROM Services WHERE service_id = ?
-    ''', (service_id,))
+    cursor.execute('SELECT * FROM Services WHERE service_id = ?', (service_id,))
     return cursor.fetchone()
 
 def get_service_cost(service_id):
-    cursor.execute('''
-        SELECT price FROM Services WHERE service_id = ?
-    ''', (service_id,))
+    cursor.execute('SELECT price FROM Services WHERE service_id = ?', (service_id,))
     return cursor.fetchone()[0]
 
 def remove_punctuation(in_string):
@@ -167,28 +170,13 @@ def modify_appointment(listbox):
     edit_window = tk.Toplevel()
     edit_window.title("Edit Appointment")
 
-    vin_label = tk.Label(edit_window, text="Vehicle ID:")
-    vin_label.pack()
-
-    vehicle_var = tk.StringVar()
-    vehicle_combobox = ttk.Combobox(edit_window, textvariable=vehicle_var)
-    vehicle_combobox['values'] = get_vehicle_ids(existing_customer_id)
-    vehicle_combobox.set(existing_vehicle_id)
-    vehicle_combobox.pack()
-
-    service_label = tk.Label(edit_window, text="Service ID:")
-    service_label.pack()
-
-    service_var = tk.StringVar()
-    services_combobox = ttk.Combobox(edit_window, textvariable=service_var)
-    services_combobox['values'] = get_services()
-    services_combobox.set(existing_service_id)
-    services_combobox.pack()
+    vehicle_var, vehicle_combobox = create_combobox(edit_window, values=get_vehicle_ids(existing_customer_id), default_value=existing_vehicle_id, label_text="Vehicle ID:")
+    service_var, services_combobox = create_combobox(edit_window, values=get_services(), default_value=existing_service_id, label_text="Service ID:")
 
     calendar = Calendar(edit_window, selectmode="day")
     calendar.pack(pady=20)
 
-    date_entry = tk.Entry(edit_window, width=12, background="darkblue", foreground="white", borderwidth=2)
+    date_entry = tk.Entry(edit_window, width=12, borderwidth=2)
     date_entry.pack(pady=20)
     date_entry.insert(0, existing_appointment_date)
 
@@ -212,15 +200,7 @@ def modify_appointment(listbox):
     )
     get_datetime_button.pack(pady=20)
 
-
-    status_label = tk.Label(edit_window, text="Status:")
-    status_label.pack()
-
-    status_var = tk.StringVar()
-    status_combobox = ttk.Combobox(edit_window, textvariable=status_var)
-    status_combobox['values'] = ["Pending", "In Progress", "Complete"]
-    status_combobox.set(existing_status)
-    status_combobox.pack()
+    status_var, status_combobox = create_combobox(edit_window, values=["Pending", "In Progress", "Complete"], default_value=existing_status, label_text="Status:")
 
     # Create Entry widgets for the new vehicle_id, service_id, appointment_date, and status
 
