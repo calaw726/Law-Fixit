@@ -541,7 +541,6 @@ def load_upcoming_appointments():
     upcoming_appointments_frame.grid_rowconfigure(0, weight=3)
     button_row.grid_rowconfigure(0, weight=1)
 
-
 def get_logo(path=None, resize_factor=0.5):
     if path is None:
         path = os.path.join('assets', 'logo.jpg')
